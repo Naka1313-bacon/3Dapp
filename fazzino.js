@@ -63,7 +63,7 @@ camera.position.set(0, 0, 6);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+document.getElementById('modelContainer').appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -84,7 +84,7 @@ function updateControlsDistance() {
       break;
     case 'desktop':
       controls.minDistance = 0;
-      controls.maxDistance = 1.3;
+      controls.maxDistance = 1.6;
       break;
   }
   

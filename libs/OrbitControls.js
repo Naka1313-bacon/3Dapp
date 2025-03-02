@@ -59,7 +59,7 @@ class OrbitControls extends Controls {
 
 		// How far you can dolly in and out ( PerspectiveCamera only )
 		this.minDistance = 0;
-		this.maxDistance = 1.5;
+		this.maxDistance = 1.7;
 
 		// How far you can zoom in and out ( OrthographicCamera only )
 		this.minZoom = 0;
