@@ -29,7 +29,21 @@ const modelInfo = {
   },
 };
 
-// インフォメーションパネルを更新する関数
+function getDeviceType() {
+  const width = window.innerWidth;
+  console.log('Current window width:', width); // デバッグ用
+  if (width <= 480) {
+    console.log('Detected device: mobile');
+    return 'mobile';
+  }
+  if (width <= 768) {
+    console.log('Detected device: tablet');
+    return 'tablet';
+  }
+  console.log('Detected device: desktop');
+  return 'desktop';
+}
+
 function updateInfoPanel(modelUrl) {
   const info = modelInfo[modelUrl];
   if (!info) return;
@@ -53,23 +67,33 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-function updateControlsDistance() {
-  const isMobile = window.innerWidth <= 480;
-  const isTablet = window.innerWidth > 480 && window.innerWidth <= 768;
-  
-  if (isMobile) {
-    controls.minDistance = 1;    // モバイルでは最小距離を大きく
-    controls.maxDistance = 10;    // モバイルでは最大距離を制限
-  } else if (isTablet) {
-    controls.minDistance = 0;    // タブレットでは中間的な値
-    controls.maxDistance = 2;
-  } else {
-    controls.minDistance = 0;    // デスクトップはより自由に
-    controls.maxDistance = 0.7;
-  }
-}
 
-// 初期設定
+updateControlsDistance();
+function updateControlsDistance() {
+  const deviceType = getDeviceType();
+  console.log('Current device type:', deviceType); // デバッグ用
+
+  switch (deviceType) {
+    case 'mobile':
+      controls.minDistance = 1;
+      controls.maxDistance = 10;
+      break;
+    case 'tablet':
+      controls.minDistance = 0;
+      controls.maxDistance = 2;
+      break;
+    case 'desktop':
+      controls.minDistance = 0;
+      controls.maxDistance = 1.3;
+      break;
+  }
+  
+  // 現在の設定を確認
+  console.log('Current distance settings:', {
+    min: controls.minDistance,
+    max: controls.maxDistance
+  });
+}
 updateControlsDistance();
 
 
@@ -144,10 +168,12 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
-
+window.addEventListener('orientationchange', () => {
+  setTimeout(updateControlsDistance, 100); // 向き変更後に少し待ってから更新
+});
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  updateControlsDistance();
+  setTimeout(updateControlsDistance, 100);
 });
