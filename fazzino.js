@@ -53,9 +53,10 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
+function updateControlsDistance() {
   const isMobile = window.innerWidth <= 480;
   const isTablet = window.innerWidth > 480 && window.innerWidth <= 768;
-
+  
   if (isMobile) {
     controls.minDistance = 1;    // モバイルでは最小距離を大きく
     controls.maxDistance = 10;    // モバイルでは最大距離を制限
@@ -66,6 +67,10 @@ const controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 0;    // デスクトップはより自由に
     controls.maxDistance = 0.7;
   }
+}
+
+// 初期設定
+updateControlsDistance();
 
 
 controls.enableDamping = true;
@@ -144,5 +149,5 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
- 
+  updateControlsDistance();
 });
