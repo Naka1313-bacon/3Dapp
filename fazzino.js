@@ -52,13 +52,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-function updateControlLimits() {
+
   const isMobile = window.innerWidth <= 480;
   const isTablet = window.innerWidth > 480 && window.innerWidth <= 768;
 
   if (isMobile) {
-    controls.minDistance = 0;    // モバイルでは最小距離を大きく
-    controls.maxDistance = 3;    // モバイルでは最大距離を制限
+    controls.minDistance = 1;    // モバイルでは最小距離を大きく
+    controls.maxDistance = 10;    // モバイルでは最大距離を制限
   } else if (isTablet) {
     controls.minDistance = 0;    // タブレットでは中間的な値
     controls.maxDistance = 2;
@@ -66,10 +66,8 @@ function updateControlLimits() {
     controls.minDistance = 0;    // デスクトップはより自由に
     controls.maxDistance = 0.7;
   }
-}
 
-// 初期設定
-updateControlLimits();
+
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.touches = {
@@ -146,5 +144,5 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  updateControlLimits();
+ 
 });
