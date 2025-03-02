@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>チャールズ・ファジーノ3D</title>
+  <style>
+    /* 基本スタイル */
+    body { 
+      margin: 0; 
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* モデルコンテナ */
+    #modelContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    canvas { 
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    /* モデルセレクター */
+    #modelSelector {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      font-size: 16px; /* モバイルで読みやすいサイズ */
+    }
+
+    #modelSelector select {
+      padding: 8px;
+      font-size: 14px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* 情報パネル */
+    #infoPanel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 5px;
+      z-index: 1000;
+      width: calc(100% - 40px);
+      max-width: 300px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #infoPanel h2 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+
+    #infoPanel p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    #modelLink {
+      display: inline-block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px 15px;
+      background: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.3s;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    #modelLink:hover {
+      background: #45a049;
+    }
+
+    /* 免責事項 */
+    .disclaimer {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      z-index: 1000;
+      width: calc(100% - 40px);
+      max-width: 600px;
+    }
+
+    /* チュートリアル */
+    .tutorial {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 2000;
+      width: calc(100% - 40px);
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .tutorial h3 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .tutorial-content {
+      margin-bottom: 20px;
+    }
+
+    .tutorial-step {
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+    }
+
+    .tutorial-icon {
+      font-size: 24px;
+      color: #4CAF50;
+      flex-shrink: 0;
+    }
+
+    .tutorial-step span:last-child {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .close-tutorial {
+      width: 100%;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 16px;
+    }
+
+    .close-tutorial:hover {
+      background: #45a049;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* メディアクエリ - スマートフォン向け */
+    @media (max-width: 480px) {
+      #modelSelector {
+        width: calc(100% - 20px);
+      }
+
+      #modelContainer {
+        height: 80vh; /* モバイルでは高さを制限 */
+      }
+
+      #infoPanel {
+        top: auto;
+        bottom: 70px;
+        width: calc(100% - 40px);
+      }
+
+      .tutorial {
+        padding: 15px;
+      }
+
+      .tutorial-step {
+        font-size: 13px;
+      }
+    }
+
+    /* メディアクエリ - タブレット向け */
+    @media (min-width: 481px) and (max-width: 768px) {
+      #modelContainer {
+        height: 85vh;
+      }
+      #infoPanel {
+        max-width: 250px;
+      }
+
+      .tutorial {
+        max-width: 450px;
+      }
+    }
+
+    /* タッチデバイス向けの調整 */
+    @media (hover: none) {
+      #modelLink, .close-tutorial {
+        -webkit-tap-highlight-color: transparent;
+        padding: 15px 20px;
+      }
+    }
+</style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./libs/three.module.js",
+        "GLTFLoader": "./libs/GLTFLoader.js",
+        "BufferGeometoryUtil": "./utils/BufferGeometoryUtil.js",
+        "OrbitControls": "./libs/OrbitControls.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="modelContainer"></div>
+  <div id="modelSelector">
+    <select id="modelChoice">
+      <option value="./assets/lovelyMt.glb">ラブリー・Mt.Fuji・ミニ</option>
+      <option value="./assets/mistic.glb">ミスティック・Mt.Fuji</option>
+      <option value="./assets/shanghai.glb">ハッピー上海</option>
+      <option value="./assets/santa.glb">サンタ・アラウンド・ザ・ワールド</option>
+
+    </select>
+  </div>
+ 
+  <div id="infoPanel">
+    <h2>作品情報</h2>
+    <p id="modelTitle"></p>
+    <p id="modelSize"></p>
+    <p id="modelPrice"></p>
+    <a id="modelLink" href="#" target="_blank">購入ページへ</a>
+  </div>
+  <div class="disclaimer">
+    ※これは3Dイメージです。一部実物を再現できていない箇所がございます。
+  </div>
+
+  <div id="tutorial" class="tutorial">
+    <h3>操作方法</h3>
+    <div class="tutorial-content">
+      <div class="tutorial-step">
+        <span class="tutorial-icon">🔄</span>
+        <span>回転: マウス左クリック / 1本指でドラッグ</span>
+      </div>
+      <div class="tutorial-step">
+        <span class="tutorial-icon">↔️</span>
+        <span>移動: マウス右クリック / 2本指でドラッグ</span>
+      </div>
+      <div class="tutorial-step">
+        <span class="tutorial-icon">🔍</span>
+        <span>ズーム: マウスホイール / 2本指でピンチ</span>
+      </div>
+    </div>
+    <button class="close-tutorial" onclick="closeTutorial()">チュートリアルを閉じる</button>
+  </div>
+
+  <script type="module" src="fazzino.js"></script>
+  <script>
+    function closeTutorial() {
+      document.getElementById('tutorial').classList.add('hidden');
+      localStorage.setItem('tutorialSeen', 'true');
+    }
+
+    // チュートリアルの表示制御
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('tutorialSeen')) {
+        document.getElementById('tutorial').classList.remove('hidden');
+      } else {
+        document.getElementById('tutorial').classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
