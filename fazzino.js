@@ -60,11 +60,15 @@ scene.background = new THREE.Color(0xffffff);
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 camera.position.set(0, 2, 6);
-camera.lookAt(new THREE.Vector3(0, 0, 0)); 
+const container = document.getElementById('modelContainer');
+
+camera.aspect = container.clientWidth / container.clientHeight;
+camera.updateProjectionMatrix();
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(container.clientWidth, container.clientHeight);
 document.getElementById('modelContainer').appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -77,7 +81,7 @@ function updateControlsDistance() {
 
   switch (deviceType) {
     case 'mobile':
-      controls.minDistance = 1;
+      controls.minDistance = 0;
       controls.maxDistance = 10;
       break;
     case 'tablet':
@@ -174,8 +178,9 @@ window.addEventListener('orientationchange', () => {
   setTimeout(updateControlsDistance, 100); // 向き変更後に少し待ってから更新
 });
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  const container = document.getElementById('modelContainer');
+  camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(container.clientWidth, container.clientHeight);
   setTimeout(updateControlsDistance, 100);
 });
