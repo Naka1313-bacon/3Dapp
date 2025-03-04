@@ -21,7 +21,7 @@ const modelInfo = {
     price: '110,000円 (税込)',
     shopUrl: 'https://www.fazzino.jp/guide/3Dart/Shanghai-Mini'
   },
-  './assets/santa.glb': {
+  './assets/santa3glb.glb': {
     title: 'サンタ・アラウンド・ザ・ワールド（color）',
     size: '48×48cm',
     price: '264,000円 (税込)',
